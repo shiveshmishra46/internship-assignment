@@ -1,184 +1,4 @@
-// Geolocation API implementation
-
-let userLocation = null;
-let watchId = null;
-let locationPermissionGranted = false;
-
-// Initialize geolocation functionality
-function initGeolocation() {
-    // Check if Geolocation API is available
-    if (!('geolocation' in navigator)) {
-        showGeolocationError("Geolocation is not supported by your browser");
-        return;
-    }
-    
-    // Set up event listeners
-    document.getElementById('find-me').addEventListener('click', requestGeolocation);
-}
-
-// Request user location
-function requestGeolocation() {
-    // Check for geolocation permission
-    if (!locationPermissionGranted) {
-        navigator.permissions.query({ name: 'geolocation' })
-            .then((permissionStatus) => {
-                handlePermissionStatus(permissionStatus);
-                
-                // Listen for permission changes
-                permissionStatus.onchange = () => {
-                    handlePermissionStatus(permissionStatus);
-                };
-            })
-            .catch(error => {
-                console.error('Error checking geolocation permission:', error);
-                // Try direct geolocation request as fallback
-                getCurrentPosition();
-            });
-    } else {
-        // Permission already granted, get current position
-        getCurrentPosition();
-    }
-}
-
-// Handle permission status changes
-function handlePermissionStatus(permissionStatus) {
-    if (permissionStatus.state === 'granted') {
-        locationPermissionGranted = true;
-        getCurrentPosition();
-    } else if (permissionStatus.state === 'prompt') {
-        // Will prompt the user
-        getCurrentPosition();
-    } else {
-        // Permission denied
-        locationPermissionGranted = false;
-        showGeolocationError("Location permission denied");
-    }
-}
-
-// Get the user's current position
-function getCurrentPosition() {
-    const options = {
-        enableHighAccuracy: true,  // Use GPS if available
-        timeout: 10000,            // Time to wait for position (ms)
-        maximumAge: 60000          // Accept a cached position if it's not older than 1 minute
-    };
-    
-    // Show loading indicator
-    document.getElementById('find-me').textContent = 'Finding location...';
-    document.getElementById('find-me').disabled = true;
-    
-    navigator.geolocation.getCurrentPosition(
-        (position) => {
-            handlePositionSuccess(position);
-            startLocationTracking();
-        },
-        handlePositionError,
-        options
-    );
-}
-
-// Start tracking user location for continuous updates
-function startLocationTracking() {
-    // Only start tracking if we're not already tracking
-    if (watchId === null) {
-        const options = {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 60000
-        };
-        
-        watchId = navigator.geolocation.watchPosition(
-            handlePositionSuccess,
-            handlePositionError,
-            options
-        );
-    }
-}
-
-// Stop tracking user location
-function stopLocationTracking() {
-    if (watchId !== null) {
-        navigator.geolocation.clearWatch(watchId);
-        watchId = null;
-    }
-}
-
-// Handle successful geolocation
-function handlePositionSuccess(position) {
-    // Reset button state
-    document.getElementById('find-me').textContent = 'Update My Location';
-    document.getElementById('find-me').disabled = false;
-    
-    // Store user location
-    userLocation = {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-        accuracy: position.coords.accuracy,
-        timestamp: position.timestamp
-    };
-    
-    // Update the map
-    if (window.mapFunctions && window.mapFunctions.updateMapWithLocation) {
-        window.mapFunctions.updateMapWithLocation(userLocation);
-    }
-    
-    // Fetch nearby points of interest
-    fetchNearbyPlaces(userLocation);
-    
-    // Update recommendations based on location
-    updateRecommendations(userLocation);
-    
-    // Log for debugging
-    console.log('User location updated:', userLocation);
-}
-
-// Handle geolocation errors
-function handlePositionError(error) {
-    // Reset button state
-    document.getElementById('find-me').textContent = 'Try Again';
-    document.getElementById('find-me').disabled = false;
-    
-    let errorMessage;
-    
-    switch(error.code) {
-        case error.PERMISSION_DENIED:
-            errorMessage = "Location permission denied";
-            locationPermissionGranted = false;
-            break;
-        case error.POSITION_UNAVAILABLE:
-            errorMessage = "Location information is unavailable";
-            break;
-        case error.TIMEOUT:
-            errorMessage = "Request to get location timed out";
-            break;
-        case error.UNKNOWN_ERROR:
-            errorMessage = "An unknown error occurred";
-            break;
-    }
-    
-    showGeolocationError(errorMessage);
-}
-
-// Display geolocation error messages
-function showGeolocationError(message) {
-    // Show the error using the app's notification system
-    window.appFunctions.showNotification(message);
-    
-    // Add an error message to the map container
-    const mapContainer = document.querySelector('.map-container');
-    
-    // Check if error message already exists
-    let errorElement = mapContainer.querySelector('.geolocation-error');
-    
-    if (!errorElement) {
-        // Create error element
-        errorElement = document.createElement('div');
-        errorElement.className = 'geolocation-error';
-        mapContainer.appendChild(errorElement);
-    }
-    
-    errorElement.textContent = message;
-}
+// Update the fetchNearbyPlaces and updateRecommendations functions in geolocation.js
 
 // Fetch nearby places using the user's location
 function fetchNearbyPlaces(location) {
@@ -187,6 +7,8 @@ function fetchNearbyPlaces(location) {
         // Simulate network delay
         setTimeout(() => {
             const pointsOfInterestContainer = document.getElementById('points-of-interest');
+            if (!pointsOfInterestContainer) return;
+            
             pointsOfInterestContainer.innerHTML = ''; // Clear loading indicator
             
             // Mock data for nearby places with more realistic data
@@ -196,42 +18,48 @@ function fetchNearbyPlaces(location) {
                     name: 'Central Park',
                     type: 'attraction',
                     distance: '0.5 km',
-                    description: 'Beautiful urban park with walking paths and open spaces.'
+                    description: 'Beautiful urban park with walking paths and open spaces.',
+                    image: 'https://source.unsplash.com/random/300x200/?park'
                 },
                 {
                     id: 'poi-2',
                     name: 'Cafe Delight',
                     type: 'restaurant',
                     distance: '0.7 km',
-                    description: 'Cozy cafe with excellent coffee and pastries.'
+                    description: 'Cozy cafe with excellent coffee and pastries.',
+                    image: 'https://source.unsplash.com/random/300x200/?cafe'
                 },
                 {
                     id: 'poi-3',
                     name: 'City Museum',
                     type: 'attraction',
                     distance: '1.2 km',
-                    description: 'Historical museum featuring local artifacts and exhibitions.'
+                    description: 'Historical museum featuring local artifacts and exhibitions.',
+                    image: 'https://source.unsplash.com/random/300x200/?museum'
                 },
                 {
                     id: 'poi-4',
                     name: 'Grand Hotel',
                     type: 'hotel',
                     distance: '1.5 km',
-                    description: 'Luxury hotel with excellent amenities and city views.'
+                    description: 'Luxury hotel with excellent amenities and city views.',
+                    image: 'https://source.unsplash.com/random/300x200/?hotel'
                 },
                 {
                     id: 'poi-5',
                     name: 'Italian Restaurant',
                     type: 'restaurant',
                     distance: '0.9 km',
-                    description: 'Authentic Italian cuisine with homemade pasta.'
+                    description: 'Authentic Italian cuisine with homemade pasta.',
+                    image: 'https://source.unsplash.com/random/300x200/?italian+food'
                 },
                 {
                     id: 'poi-6',
                     name: 'City Library',
                     type: 'attraction',
                     distance: '1.0 km',
-                    description: 'Historic library with extensive book collection and quiet reading areas.'
+                    description: 'Historic library with extensive book collection and quiet reading areas.',
+                    image: 'https://source.unsplash.com/random/300x200/?library'
                 }
             ];
             
@@ -244,20 +72,36 @@ function fetchNearbyPlaces(location) {
             mockPlaces.forEach(place => {
                 const poiElement = document.createElement('div');
                 poiElement.className = 'poi-item';
+                
+                // Add place location for saving functionality
+                place.location = {
+                    latitude: location.latitude + (Math.random() * 0.01 - 0.005),
+                    longitude: location.longitude + (Math.random() * 0.01 - 0.005)
+                };
+                
                 poiElement.innerHTML = `
                     <h3>${place.name}</h3>
                     <p>${place.description}</p>
                     <div class="poi-meta">
-                        <span class="poi-type">${place.type}</span>
+                        <span class="poi-type" data-type="${place.type}">${place.type}</span>
                         <span class="poi-distance">${place.distance}</span>
                     </div>
-                    <button class="btn secondary view-on-map-btn">View on Map</button>
+                    <div class="poi-actions">
+                        <button class="btn secondary view-on-map-btn">View on Map</button>
+                        <button class="btn primary save-poi-btn">Save for Later</button>
+                    </div>
                 `;
                 
-                // Add event listener for the view on map button
+                // Add event listeners
                 poiElement.querySelector('.view-on-map-btn').addEventListener('click', () => {
                     if (window.mapFunctions && window.mapFunctions.centerMapOnPlace) {
                         window.mapFunctions.centerMapOnPlace(place);
+                    }
+                });
+                
+                poiElement.querySelector('.save-poi-btn').addEventListener('click', () => {
+                    if (window.appFunctions && window.appFunctions.savePlace) {
+                        window.appFunctions.savePlace(place);
                     }
                 });
                 
@@ -274,6 +118,7 @@ function updateRecommendations(location) {
         // Simulate network delay
         setTimeout(() => {
             const recommendationsContainer = document.getElementById('recommendations-container');
+            if (!recommendationsContainer) return;
             
             // Clear existing recommendations
             recommendationsContainer.innerHTML = '';
@@ -338,6 +183,7 @@ function updateRecommendations(location) {
             
             // Get recommendation template
             const template = document.getElementById('recommendation-template');
+            if (!template) return;
             
             // Generate recommendation cards
             mockRecommendations.forEach(recommendation => {
@@ -371,10 +217,14 @@ function updateRecommendations(location) {
                         description: recommendation.description,
                         image: recommendation.image,
                         category: recommendation.category,
-                        location: placeLocation
+                        location: placeLocation,
+                        rating: recommendation.rating,
+                        distance: recommendation.distance
                     };
                     
-                    window.appFunctions.savePlace(placeData);
+                    if (window.appFunctions && window.appFunctions.savePlace) {
+                        window.appFunctions.savePlace(placeData);
+                    }
                 });
                 
                 // Append to container
@@ -382,14 +232,9 @@ function updateRecommendations(location) {
             });
             
             // Initialize intersection observer for the newly added images
-            observeImages();
+            if (window.observerFunctions && window.observerFunctions.observeImages) {
+                window.observerFunctions.observeImages();
+            }
         }, 1000);
     });
 }
-
-// Make functions available to other scripts
-window.geolocationFunctions = {
-    getUserLocation: () => userLocation,
-    requestGeolocation,
-    stopLocationTracking
-};

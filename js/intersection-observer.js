@@ -2,6 +2,7 @@
 
 // Initialize Intersection Observer
 function initIntersectionObserver() {
+    console.log("Initializing Intersection Observer");
     // Set up lazy loading for images
     observeImages();
     
@@ -26,11 +27,22 @@ function observeImages() {
                 const src = img.dataset.src;
                 
                 if (src) {
+                    console.log("Loading image:", src);
                     // Replace placeholder with actual image
                     img.src = src;
                     
-                    // Remove data-src to prevent reloading
-                    img.removeAttribute('data-src');
+                    // Add load event to handle errors
+                    img.onload = () => {
+                        // Remove data-src to prevent reloading
+                        img.removeAttribute('data-src');
+                        img.classList.add('loaded');
+                    };
+                    
+                    img.onerror = () => {
+                        // If image fails to load, keep placeholder
+                        console.warn('Failed to load image:', src);
+                        img.src = 'images/placeholder.jpg';
+                    };
                     
                     // Stop observing this image
                     observer.unobserve(img);
@@ -44,6 +56,8 @@ function observeImages() {
     
     // Find all images with data-src attribute
     const lazyImages = document.querySelectorAll('img[data-src]');
+    console.log(`Found ${lazyImages.length} images to lazy load`);
+    
     lazyImages.forEach(img => {
         imageObserver.observe(img);
     });
@@ -54,8 +68,15 @@ function loadAllImages() {
     const lazyImages = document.querySelectorAll('img[data-src]');
     
     lazyImages.forEach(img => {
-        img.src = img.dataset.src;
-        img.removeAttribute('data-src');
+        const src = img.dataset.src;
+        if (src) {
+            img.src = src;
+            img.removeAttribute('data-src');
+            
+            img.onerror = () => {
+                img.src = 'images/placeholder.jpg';
+            };
+        }
     });
 }
 
@@ -72,9 +93,6 @@ function observeSections() {
             if (entry.isIntersecting) {
                 // Add animation class when section comes into view
                 entry.target.classList.add('animate-in');
-            } else {
-                // Optionally remove animation class when section leaves viewport
-                // entry.target.classList.remove('animate-in');
             }
         });
     }, {
@@ -123,34 +141,6 @@ function observeRecommendationCards() {
         cardObserver.observe(card);
     });
 }
-
-// Add additional styling for animation-ready elements
-document.addEventListener('DOMContentLoaded', () => {
-    // Add CSS for animations
-    const style = document.createElement('style');
-    style.textContent = `
-        .animation-ready {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-        
-        .animate-in {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .recommendation-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .recommendation-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-    `;
-    document.head.appendChild(style);
-});
 
 // Export functions to be used by other scripts
 window.observerFunctions = {

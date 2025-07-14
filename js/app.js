@@ -46,6 +46,9 @@ function initApp() {
             button.classList.add('active');
         });
     });
+    
+    // Load saved places when app starts
+    updateSavedPlacesUI();
 }
 
 // Navigation between sections
@@ -107,7 +110,9 @@ function showNotification(message) {
         
         // Remove from DOM after animation completes
         setTimeout(() => {
-            document.body.removeChild(notification);
+            if (notification.parentNode) {
+                document.body.removeChild(notification);
+            }
         }, 300);
     }, 5000);
 }
@@ -138,15 +143,38 @@ function filterRecommendations(filter) {
     });
 }
 
-// Save place for later
+// Save place for later - Fixed to properly save and handle data
 function savePlace(placeData) {
+    console.log("Saving place:", placeData);
+    
+    // Ensure placeData has all required fields and is properly formatted
+    if (!placeData || !placeData.id || !placeData.name) {
+        console.error("Invalid place data:", placeData);
+        showNotification('Error: Could not save place due to missing data');
+        return;
+    }
+    
     // Get existing saved places from localStorage
-    let savedPlaces = JSON.parse(localStorage.getItem('savedPlaces')) || [];
+    let savedPlaces = [];
+    try {
+        const storedPlaces = localStorage.getItem('savedPlaces');
+        if (storedPlaces) {
+            savedPlaces = JSON.parse(storedPlaces);
+        }
+    } catch (error) {
+        console.error("Error parsing saved places:", error);
+        localStorage.removeItem('savedPlaces'); // Reset if corrupted
+    }
     
     // Check if place already saved
     const isAlreadySaved = savedPlaces.some(place => place.id === placeData.id);
     
     if (!isAlreadySaved) {
+        // Make sure the place has an image (use placeholder if missing)
+        if (!placeData.image) {
+            placeData.image = 'images/placeholder.jpg';
+        }
+        
         // Add to saved places
         savedPlaces.push(placeData);
         
@@ -167,7 +195,15 @@ function savePlace(placeData) {
 // Remove saved place
 function removePlace(placeId) {
     // Get existing saved places from localStorage
-    let savedPlaces = JSON.parse(localStorage.getItem('savedPlaces')) || [];
+    let savedPlaces = [];
+    try {
+        const storedPlaces = localStorage.getItem('savedPlaces');
+        if (storedPlaces) {
+            savedPlaces = JSON.parse(storedPlaces);
+        }
+    } catch (error) {
+        console.error("Error parsing saved places:", error);
+    }
     
     // Filter out the place to remove
     savedPlaces = savedPlaces.filter(place => place.id !== placeId);
@@ -185,7 +221,20 @@ function removePlace(placeId) {
 // Update saved places UI
 function updateSavedPlacesUI() {
     const savedPlacesContainer = document.getElementById('saved-places-container');
-    const savedPlaces = JSON.parse(localStorage.getItem('savedPlaces')) || [];
+    if (!savedPlacesContainer) {
+        console.error("Saved places container not found");
+        return;
+    }
+    
+    let savedPlaces = [];
+    try {
+        const storedPlaces = localStorage.getItem('savedPlaces');
+        if (storedPlaces) {
+            savedPlaces = JSON.parse(storedPlaces);
+        }
+    } catch (error) {
+        console.error("Error parsing saved places:", error);
+    }
     
     // Clear container
     savedPlacesContainer.innerHTML = '';
@@ -197,6 +246,10 @@ function updateSavedPlacesUI() {
     
     // Get the template
     const template = document.getElementById('saved-place-template');
+    if (!template) {
+        console.error("Saved place template not found");
+        return;
+    }
     
     // Create and append saved place cards
     savedPlaces.forEach(place => {
@@ -205,8 +258,11 @@ function updateSavedPlacesUI() {
         // Set place data
         card.querySelector('.place-name').textContent = place.name;
         card.querySelector('.place-description').textContent = place.description;
-        card.querySelector('img').src = place.image || 'images/placeholder.jpg';
-        card.querySelector('img').alt = place.name;
+        
+        // Handle image
+        const imgElement = card.querySelector('img');
+        imgElement.src = place.image || 'images/placeholder.jpg';
+        imgElement.alt = place.name;
         
         // Add place ID to card for reference
         const cardElement = card.querySelector('.saved-place-card');
@@ -215,7 +271,9 @@ function updateSavedPlacesUI() {
         // Add event listeners
         card.querySelector('.view-on-map').addEventListener('click', () => {
             navigateToSection('map');
-            showPlaceOnMap(place);
+            if (window.mapFunctions && window.mapFunctions.centerMapOnPlace) {
+                window.mapFunctions.centerMapOnPlace(place);
+            }
         });
         
         card.querySelector('.remove-place').addEventListener('click', () => {
@@ -228,10 +286,37 @@ function updateSavedPlacesUI() {
 }
 
 // Show a place on the map
-function showPlaceOnMap(place) {
-    // This function will be implemented in canvas-map.js
-    // We'll just call the external function here
-    centerMapOnPlace(place);
+function showPlaceDetails(placeId) {
+    console.log("Showing place details:", placeId);
+    // Find place data
+    let savedPlaces = [];
+    try {
+        const storedPlaces = localStorage.getItem('savedPlaces');
+        if (storedPlaces) {
+            savedPlaces = JSON.parse(storedPlaces);
+        }
+    } catch (error) {
+        console.error("Error parsing saved places:", error);
+    }
+    
+    const place = savedPlaces.find(p => p.id === placeId);
+    if (place) {
+        // Navigate to saved section
+        navigateToSection('saved');
+        
+        // Highlight the place card
+        setTimeout(() => {
+            const placeCard = document.querySelector(`.saved-place-card[data-id="${placeId}"]`);
+            if (placeCard) {
+                placeCard.classList.add('highlight');
+                placeCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                setTimeout(() => {
+                    placeCard.classList.remove('highlight');
+                }, 2000);
+            }
+        }, 300);
+    }
 }
 
 // Helper function to generate a unique ID
@@ -245,47 +330,6 @@ window.appFunctions = {
     savePlace,
     removePlace,
     navigateToSection,
-    generateUniqueId
-};
-
-// Add this notification function to app.js if it's not already there
-
-// Notification function
-function showNotification(message) {
-    // Create notification element if it doesn't exist
-    let notification = document.querySelector('.notification');
-    
-    if (!notification) {
-        // Create notification element
-        notification = document.createElement('div');
-        notification.className = 'notification';
-        document.body.appendChild(notification);
-    }
-    
-    // Set message
-    notification.textContent = message;
-    
-    // Show notification
-    setTimeout(() => {
-        notification.classList.add('show');
-    }, 10);
-    
-    // Remove notification after 5 seconds
-    setTimeout(() => {
-        notification.classList.remove('show');
-        
-        // Remove from DOM after animation completes
-        setTimeout(() => {
-            if (notification.parentNode) {
-                document.body.removeChild(notification);
-            }
-        }, 300);
-    }, 5000);
-}
-
-// Make sure to add this to the window.appFunctions if not already there
-window.appFunctions = {
-    // ...existing functions
-    showNotification
-    // ...other functions
+    generateUniqueId,
+    showPlaceDetails
 };

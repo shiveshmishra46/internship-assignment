@@ -62,8 +62,8 @@
                 <p>Find interesting places around you</p>
             </div>
             <div class="map-container">
-                <!-- Replace canvas with a div for Leaflet map -->
-                <div id="map-element" style="width: 100%; height: 500px;"></div>
+                <!-- Map container with fixed height -->
+                <div id="map-element"></div>
                 <div class="map-controls">
                     <button id="find-me" class="btn secondary">Locate Me</button>
                     <button id="zoom-in" class="btn icon">+</button>
@@ -89,6 +89,7 @@
             </div>
             <div id="recommendations-container" class="recommendations-grid">
                 <!-- Recommendations will be dynamically loaded with Intersection Observer -->
+                <div class="loading-indicator">Loading recommendations...</div>
             </div>
         </section>
 
@@ -139,7 +140,7 @@
     <template id="recommendation-template">
         <div class="recommendation-card">
             <div class="recommendation-img">
-                <img src="" alt="Place">
+                <img src="images/placeholder.jpg" data-src="" alt="Place">
             </div>
             <div class="recommendation-info">
                 <h3 class="place-name"></h3>
@@ -156,7 +157,7 @@
     <template id="saved-place-template">
         <div class="saved-place-card">
             <div class="saved-place-img">
-                <img src="" alt="Saved Place">
+                <img src="images/placeholder.jpg" alt="Saved Place">
             </div>
             <div class="saved-place-info">
                 <h3 class="place-name"></h3>
@@ -189,9 +190,14 @@
     <!-- Scripts -->
     <script src="js/app.js"></script>
     <script src="js/geolocation.js"></script>
-    <script src="js/leaflet-map.js"></script> <!-- Renamed from canvas-map.js -->
+    <script src="js/leaflet-map.js"></script>
     <script src="js/intersection-observer.js"></script>
     <script src="js/background-tasks.js"></script>
     <script src="js/network-info.js"></script>
+    
+    <!-- Default images preloader -->
+    <div style="display: none;">
+        <img src="images/placeholder.jpg" alt="Preloading placeholder">
+    </div>
 </body>
 </html>
