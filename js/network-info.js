@@ -4,9 +4,13 @@
 let isOnline = true;
 let networkType = 'unknown';
 let connectionSpeed = 'unknown';
+let downlinkSpeed = 0;
+let rtt = 0;
 
 // Initialize network information functionality
 function initNetworkInfo() {
+    console.log("Initializing Network Information API");
+    
     // Check if Network Information API is available
     const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     
@@ -18,6 +22,8 @@ function initNetworkInfo() {
         connection.addEventListener('change', () => {
             updateNetworkInfo(connection);
         });
+    } else {
+        console.warn("Network Information API not supported. Using online/offline events only.");
     }
     
     // Set up online/offline event listeners (available in all browsers)
@@ -27,6 +33,14 @@ function initNetworkInfo() {
     // Check initial online status
     isOnline = navigator.onLine;
     updateOnlineStatus();
+    
+    // Update network info periodically (some browsers don't trigger change events consistently)
+    setInterval(() => {
+        const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        if (conn) {
+            updateNetworkInfo(conn);
+        }
+    }, 10000);
 }
 
 // Update network information from Connection API
@@ -38,8 +52,8 @@ function updateNetworkInfo(connection) {
     const effectiveType = connection.effectiveType || 'unknown';
     
     // Get connection speed metrics
-    const downlinkSpeed = connection.downlink; // Mbps
-    const rtt = connection.rtt; // Round-trip time in ms
+    downlinkSpeed = connection.downlink || 0; // Mbps
+    rtt = connection.rtt || 0; // Round-trip time in ms
     
     // Determine connection quality
     let connectionQuality;
@@ -56,7 +70,7 @@ function updateNetworkInfo(connection) {
     }
     
     // Update UI with network information
-    updateNetworkUI(connectionQuality, networkType);
+    updateNetworkUI(connectionQuality, networkType, effectiveType);
     
     // Apply network-aware content strategies
     applyNetworkStrategies(connectionQuality);
@@ -76,7 +90,9 @@ function handleOnline() {
     updateOnlineStatus();
     
     // Show notification
-    window.appFunctions.showNotification('You are back online');
+    if (window.appFunctions && window.appFunctions.showToast) {
+        window.appFunctions.showToast('You are back online', 'success');
+    }
     
     // Sync any data that was changed while offline
     syncOfflineChanges();
@@ -88,7 +104,9 @@ function handleOffline() {
     updateOnlineStatus();
     
     // Show notification
-    window.appFunctions.showNotification('You are offline. Limited features available');
+    if (window.appFunctions && window.appFunctions.showToast) {
+        window.appFunctions.showToast('You are offline. Limited features available', 'warning');
+    }
 }
 
 // Update UI based on online status
@@ -96,6 +114,10 @@ function updateOnlineStatus() {
     const statusElement = document.getElementById('network-status');
     const indicator = document.getElementById('network-indicator');
     const offlineMessage = document.getElementById('offline-message');
+    
+    if (!statusElement || !indicator) {
+        return;
+    }
     
     if (isOnline) {
         statusElement.textContent = 'Online';
@@ -115,28 +137,50 @@ function updateOnlineStatus() {
 }
 
 // Update UI based on network quality
-function updateNetworkUI(connectionQuality, networkType) {
+function updateNetworkUI(connectionQuality, networkType, effectiveType) {
     const statusElement = document.getElementById('network-status');
     const indicator = document.getElementById('network-indicator');
+    const speedElement = document.getElementById('network-speed');
     
-    if (!isOnline) {
+    if (!statusElement || !indicator || !isOnline) {
         // Keep offline status if not online
         return;
     }
     
+    // Update connection type and quality
+    let statusText;
     switch (connectionQuality) {
         case 'high':
-            statusElement.textContent = 'Fast Connection';
+            statusText = effectiveType === '4g' ? '4G' : 'Fast';
             indicator.className = 'online';
             break;
         case 'medium':
-            statusElement.textContent = 'Good Connection';
+            statusText = effectiveType === '3g' ? '3G' : 'Good';
             indicator.className = 'online';
             break;
         case 'low':
-            statusElement.textContent = 'Slow Connection';
+            statusText = effectiveType === '2g' ? '2G' : 'Slow';
             indicator.className = 'slow';
             break;
+        default:
+            statusText = 'Online';
+            indicator.className = 'online';
+    }
+    
+    // Update network type if available (wifi, cellular, etc)
+    if (networkType && networkType !== 'unknown') {
+        statusText = networkType.charAt(0).toUpperCase() + networkType.slice(1);
+    }
+    
+    statusElement.textContent = statusText;
+    
+    // Update speed information
+    if (speedElement) {
+        if (downlinkSpeed > 0) {
+            speedElement.textContent = `${downlinkSpeed.toFixed(1)} Mbps`;
+        } else {
+            speedElement.textContent = '';
+        }
     }
 }
 
@@ -165,11 +209,15 @@ function adjustImageQuality(connectionQuality) {
     document.querySelectorAll('img[data-src]').forEach(img => {
         const src = img.dataset.src;
         if (src && !img.src) {
-            // In a real app, we would modify the URL to load different image qualities
-            // For this demo, we're just logging the action
+            // For demonstration purposes, we're just logging the action
+            // In a real app, we would replace the URL with a different quality version
             console.log(`Loading image with ${quality} quality:`, src);
         }
     });
+    
+    // Add class to body for CSS optimizations
+    document.body.classList.remove('connection-high', 'connection-medium', 'connection-low');
+    document.body.classList.add(`connection-${quality}`);
 }
 
 // Adjust content loading strategy based on connection
@@ -193,6 +241,14 @@ function adjustLoadingStrategy(connectionQuality) {
     
     // Update preload count for the application
     window.preloadCount = preloadCount;
+    
+    // Adjust animation complexity based on connection
+    if (connectionQuality === 'low') {
+        // Reduce animations for slow connections
+        document.body.classList.add('reduce-motion');
+    } else {
+        document.body.classList.remove('reduce-motion');
+    }
 }
 
 // Sync changes made while offline
@@ -213,7 +269,9 @@ function syncOfflineChanges() {
             
             if (changes.length > 0) {
                 // Show syncing notification
-                window.appFunctions.showNotification('Syncing your changes...');
+                if (window.appFunctions && window.appFunctions.showToast) {
+                    window.appFunctions.showToast('Syncing your changes...', 'info');
+                }
                 
                 // Use Background Tasks API to handle syncing without blocking UI
                 scheduleBackgroundTask(() => {
@@ -223,7 +281,9 @@ function syncOfflineChanges() {
                         localStorage.removeItem('pendingChanges');
                         
                         // Show success notification
-                        window.appFunctions.showNotification('All changes synced successfully');
+                        if (window.appFunctions && window.appFunctions.showToast) {
+                            window.appFunctions.showToast('All changes synced successfully', 'success');
+                        }
                     }, 2000);
                 });
             }
@@ -249,7 +309,9 @@ function saveChangeOffline(change) {
     
     // Add new change
     pendingChanges.push({
-        id: window.appFunctions.generateUniqueId(),
+        id: window.appFunctions && window.appFunctions.generateUniqueId ? 
+            window.appFunctions.generateUniqueId() : 
+            Date.now().toString(36) + Math.random().toString(36).substring(2),
         type: change.type,
         data: change.data,
         timestamp: Date.now()
@@ -259,7 +321,9 @@ function saveChangeOffline(change) {
     localStorage.setItem('pendingChanges', JSON.stringify(pendingChanges));
     
     // Show notification
-    window.appFunctions.showNotification('Changes saved offline and will sync when you reconnect');
+    if (window.appFunctions && window.appFunctions.showToast) {
+        window.appFunctions.showToast('Changes saved offline and will sync when you reconnect', 'info');
+    }
 }
 
 // Make functions available to other scripts
@@ -267,5 +331,7 @@ window.networkFunctions = {
     isOnline: () => isOnline,
     getNetworkType: () => networkType,
     getConnectionSpeed: () => connectionSpeed,
+    getDownlinkSpeed: () => downlinkSpeed,
+    getRtt: () => rtt,
     saveChangeOffline
 };

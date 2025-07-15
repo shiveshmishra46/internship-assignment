@@ -5,27 +5,135 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Travel Companion</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="js/sidebar.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Add Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
           crossorigin=""/>
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body>
+<body class="light-mode">
+    <!-- Sidebar overlay -->
+    <div class="sidebar-overlay"></div>
+    
+    <!-- Sidebar menu -->
+    <!-- Updated sidebar HTML -->
+      <!-- Sidebar menu - perfectly aligned with the image -->
+      <!-- Sidebar menu with fixed buttons and text -->
+      <aside class="sidebar">
+          <div class="sidebar-header">
+              <h2>Menu</h2>
+              <button class="close-sidebar"><i class="fas fa-times"></i></button>
+          </div>
+
+          <!-- User info section with proper spacing -->
+          <div class="sidebar-content">
+              <div class="user-section">
+                  <div class="user-avatar">
+                      <i class="fas fa-user"></i>
+                  </div>
+                  <div class="user-info">
+                      <h3>Travel User</h3>
+                      <p>Explorer</p>
+                  </div>
+              </div>
+
+              <!-- Navigation section with proper layout -->
+              <div class="nav-grid">
+                  <a href="#home" class="nav-item active">
+                      <div class="nav-icon">
+                          <i class="fas fa-home"></i>
+                      </div>
+                      <span>Home</span>
+                  </a>
+                  <a href="#map" class="nav-item">
+                      <div class="nav-icon">
+                          <i class="fas fa-map"></i>
+                      </div>
+                      <span>Map</span>
+                  </a>
+                  <a href="#recommendations" class="nav-item">
+                      <div class="nav-icon">
+                          <i class="fas fa-thumbs-up"></i>
+                      </div>
+                      <span>Recommendati-ons</span>
+                  </a>
+                  <a href="#saved" class="nav-item">
+                      <div class="nav-icon">
+                          <i class="fas fa-bookmark"></i>
+                      </div>
+                      <span>Saved Places</span>
+                  </a>
+              </div>
+
+              <!-- Settings section -->
+              <div class="settings-section">
+                  <h4>Settings</h4>
+                  
+                  <!-- Theme toggle with perfect styling -->
+                  <div class="setting-item">
+                      <div class="setting-label">
+                          <i class="fas fa-moon"></i>
+                          <span>Theme</span>
+                      </div>
+                      <label class="toggle">
+                          <input type="checkbox" id="theme-switch">
+                          <span class="toggle-slider theme-slider"></span>
+                      </label>
+                  </div>
+                  
+                  <!-- Notification toggle with perfect styling -->
+                  <div class="setting-item">
+                      <div class="setting-label">
+                          <i class="fas fa-bell"></i>
+                          <span>Notifications</span>
+                      </div>
+                      <label class="toggle">
+                          <input type="checkbox" id="notification-toggle" checked>
+                          <span class="toggle-slider notification-slider"></span>
+                      </label>
+                  </div>
+              </div>
+          </div>
+      </aside>
+
     <header>
         <nav>
             <div class="logo">
                 <h1>Smart Travel Companion</h1>
             </div>
             <div class="nav-items">
-                <a href="#home" class="active">Home</a>
-                <a href="#map">Map</a>
-                <a href="#recommendations">Recommendations</a>
-                <a href="#saved">Saved Places</a>
+                <a href="#home" class="active"><i class="fas fa-home"></i> <span>Home</span></a>
+                <a href="#map"><i class="fas fa-map-location-dot"></i> <span>Map</span></a>
+                <a href="#recommendations"><i class="fas fa-thumbs-up"></i> <span>Recommendations</span></a>
+                <a href="#saved"><i class="fas fa-bookmark"></i> <span>Saved</span></a>
             </div>
-            <div class="connection-status">
-                <span id="network-status">Online</span>
-                <div id="network-indicator" class="online"></div>
+            <div class="nav-right">
+                <div class="theme-toggle">
+                    <input type="checkbox" id="nav-theme-toggle" class="theme-toggle-input">
+                    <label for="nav-theme-toggle" class="theme-toggle-label">
+                        <i class="fas fa-sun"></i>
+                        <i class="fas fa-moon"></i>
+                    </label>
+                </div>
+                <div class="network-info-container">
+                    <div id="live-clock" class="live-clock">
+                        <div class="clock-time">--:--</div>
+                        <div class="clock-date">--- --, ----</div>
+                    </div>
+                    <div class="connection-status">
+                        <div class="network-details">
+                            <span id="network-status">Online</span>
+                            <span id="network-speed" class="network-speed">--</span>
+                        </div>
+                        <div id="network-indicator" class="online"></div>
+                    </div>
+                </div>
+                <button class="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
             </div>
         </nav>
     </header>
@@ -35,23 +143,37 @@
             <div class="hero">
                 <h2>Discover the World Around You</h2>
                 <p>Your intelligent travel assistant that works even when offline</p>
-                <button id="get-started-btn" class="btn primary">Get Started</button>
+                <button id="get-started-btn" class="btn primary">Get Started <i class="fas fa-arrow-right"></i></button>
             </div>
             <div class="features">
                 <div class="feature-card">
-                    <div class="icon">📍</div>
+                    <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
                     <h3>Location-Based Insights</h3>
                     <p>Discover hidden gems based on your precise location</p>
                 </div>
                 <div class="feature-card">
-                    <div class="icon">📱</div>
+                    <div class="icon"><i class="fas fa-wifi-slash"></i></div>
                     <h3>Works Offline</h3>
                     <p>Access your saved places even without internet</p>
                 </div>
                 <div class="feature-card">
-                    <div class="icon">🗺️</div>
+                    <div class="icon"><i class="fas fa-map"></i></div>
                     <h3>Interactive Maps</h3>
                     <p>Visualize your journey with custom maps</p>
+                </div>
+            </div>
+            <div class="stats-section">
+                <h3>Travel Analytics</h3>
+                <p>Visualize your travel data with interactive charts</p>
+                <div class="stats-container">
+                    <div class="stats-card">
+                        <h4>Popular Categories</h4>
+                        <canvas id="categories-chart" width="300" height="200"></canvas>
+                    </div>
+                    <div class="stats-card">
+                        <h4>Distance Traveled</h4>
+                        <canvas id="distance-chart" width="300" height="200"></canvas>
+                    </div>
                 </div>
             </div>
         </section>
@@ -65,14 +187,17 @@
                 <!-- Map container with fixed height -->
                 <div id="map-element"></div>
                 <div class="map-controls">
-                    <button id="find-me" class="btn secondary">Locate Me</button>
-                    <button id="zoom-in" class="btn icon">+</button>
-                    <button id="zoom-out" class="btn icon">-</button>
+                    <button id="find-me" class="btn secondary"><i class="fas fa-location-crosshairs"></i> Locate Me</button>
+                    <button id="zoom-in" class="btn icon"><i class="fas fa-plus"></i></button>
+                    <button id="zoom-out" class="btn icon"><i class="fas fa-minus"></i></button>
                 </div>
             </div>
             <div id="points-of-interest" class="poi-container">
                 <!-- Points of interest will be populated here -->
-                <div class="loading-indicator">Loading nearby places...</div>
+                <div class="loading-indicator">
+                    <div class="spinner"></div>
+                    <p>Loading nearby places...</p>
+                </div>
             </div>
         </section>
 
@@ -89,7 +214,10 @@
             </div>
             <div id="recommendations-container" class="recommendations-grid">
                 <!-- Recommendations will be dynamically loaded with Intersection Observer -->
-                <div class="loading-indicator">Loading recommendations...</div>
+                <div class="loading-indicator">
+                    <div class="spinner"></div>
+                    <p>Loading recommendations...</p>
+                </div>
             </div>
         </section>
 
@@ -102,6 +230,7 @@
                 <!-- Saved places will be populated here -->
             </div>
             <div class="offline-message" id="offline-message">
+                <i class="fas fa-exclamation-triangle"></i>
                 <p>You're currently offline, but you can still access your saved places</p>
             </div>
         </section>
@@ -116,18 +245,18 @@
             <div class="footer-section">
                 <h3>Quick Links</h3>
                 <ul>
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#map">Map</a></li>
-                    <li><a href="#recommendations">Recommendations</a></li>
-                    <li><a href="#saved">Saved Places</a></li>
+                    <li><a href="#home"><i class="fas fa-angle-right"></i> Home</a></li>
+                    <li><a href="#map"><i class="fas fa-angle-right"></i> Map</a></li>
+                    <li><a href="#recommendations"><i class="fas fa-angle-right"></i> Recommendations</a></li>
+                    <li><a href="#saved"><i class="fas fa-angle-right"></i> Saved Places</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h3>Connect</h3>
                 <div class="social-icons">
-                    <a href="#" class="social-icon">📱</a>
-                    <a href="#" class="social-icon">💌</a>
-                    <a href="#" class="social-icon">🌐</a>
+                    <a href="#" class="social-icon"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
         </div>
@@ -141,6 +270,7 @@
         <div class="recommendation-card">
             <div class="recommendation-img">
                 <img src="images/placeholder.jpg" data-src="" alt="Place">
+                <div class="card-badge"></div>
             </div>
             <div class="recommendation-info">
                 <h3 class="place-name"></h3>
@@ -149,7 +279,7 @@
                     <span class="place-rating"></span>
                     <span class="place-distance"></span>
                 </div>
-                <button class="btn save-place">Save for Later</button>
+                <button class="btn save-place"><i class="fas fa-bookmark"></i> Save for Later</button>
             </div>
         </div>
     </template>
@@ -158,14 +288,30 @@
         <div class="saved-place-card">
             <div class="saved-place-img">
                 <img src="images/placeholder.jpg" alt="Saved Place">
+                <div class="card-badge"></div>
             </div>
             <div class="saved-place-info">
                 <h3 class="place-name"></h3>
                 <p class="place-description"></p>
                 <div class="place-actions">
-                    <button class="btn view-on-map">View on Map</button>
-                    <button class="btn remove-place">Remove</button>
+                    <button class="btn view-on-map"><i class="fas fa-map-marker-alt"></i> View on Map</button>
+                    <button class="btn remove-place"><i class="fas fa-trash"></i> Remove</button>
                 </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="poi-template">
+        <div class="poi-item">
+            <h3 class="poi-name"></h3>
+            <p class="poi-description"></p>
+            <div class="poi-meta">
+                <span class="poi-type"></span>
+                <span class="poi-distance"></span>
+            </div>
+            <div class="poi-actions">
+                <button class="btn secondary view-on-map-btn"><i class="fas fa-map-marker-alt"></i> View on Map</button>
+                <button class="btn primary save-poi-btn"><i class="fas fa-bookmark"></i> Save</button>
             </div>
         </div>
     </template>
@@ -173,19 +319,58 @@
     <!-- Modal for location permission -->
     <div id="permission-modal" class="modal">
         <div class="modal-content">
-            <h3>Location Access Needed</h3>
-            <p>To provide you with local recommendations and map functionality, we need access to your location.</p>
+            <div class="modal-header">
+                <h3><i class="fas fa-location-dot"></i> Location Access Needed</h3>
+                <button class="close-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <p>To provide you with local recommendations and map functionality, we need access to your location.</p>
+                <div class="location-illustration">
+                    <i class="fas fa-map-marked-alt"></i>
+                </div>
+            </div>
             <div class="modal-actions">
-                <button id="grant-permission" class="btn primary">Grant Access</button>
-                <button id="deny-permission" class="btn secondary">Not Now</button>
+                <button id="grant-permission" class="btn primary"><i class="fas fa-check"></i> Grant Access</button>
+                <button id="deny-permission" class="btn secondary"><i class="fas fa-times"></i> Not Now</button>
             </div>
         </div>
     </div>
+
+    <!-- Modal for place details -->
+    <div id="place-details-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="detail-place-name">Place Name</h3>
+                <button class="close-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-img">
+                    <img id="detail-place-img" src="images/placeholder.jpg" alt="Place">
+                </div>
+                <p id="detail-place-description">Description will appear here</p>
+                <div class="detail-meta">
+                    <span id="detail-place-rating"></span>
+                    <span id="detail-place-distance"></span>
+                    <span id="detail-place-type"></span>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="detail-view-on-map" class="btn secondary"><i class="fas fa-map-marker-alt"></i> View on Map</button>
+                <button id="detail-save-place" class="btn primary"><i class="fas fa-bookmark"></i> Save for Later</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast notifications container -->
+    <div id="toast-container"></div>
 
     <!-- Load Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
             crossorigin=""></script>
+    
+    <!-- Chart.js for Canvas-based charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
             
     <!-- Scripts -->
     <script src="js/app.js"></script>
@@ -194,10 +379,7 @@
     <script src="js/intersection-observer.js"></script>
     <script src="js/background-tasks.js"></script>
     <script src="js/network-info.js"></script>
-    
-    <!-- Default images preloader -->
-    <div style="display: none;">
-        <img src="images/placeholder.jpg" alt="Preloading placeholder">
-    </div>
+    <script src="js/charts.js"></script>
+    <script src="js/theme.js"></script>
 </body>
 </html>

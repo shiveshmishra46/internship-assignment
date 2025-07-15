@@ -8,10 +8,17 @@ let isProcessing = false;
 
 // Initialize background tasks functionality
 function initBackgroundTasks() {
+    console.log("Initializing Background Tasks API");
+    
     // Check if requestIdleCallback is available
     if (!('requestIdleCallback' in window)) {
         // Fallback for browsers that don't support requestIdleCallback
         console.warn('Background Tasks API not supported. Using setTimeout as fallback.');
+    }
+    
+    // Process any tasks that might be already in the queue
+    if (taskQueue.length > 0 && !isProcessing) {
+        processTaskQueue();
     }
 }
 
@@ -26,7 +33,8 @@ function scheduleBackgroundTask(task, options = {}) {
     taskQueue.push({
         task,
         priority: options.priority || 'normal', // 'high', 'normal', or 'low'
-        deadline: options.deadline || 50 // Default 50ms time allocation
+        deadline: options.deadline || 50, // Default 50ms time allocation
+        id: Date.now().toString(36) + Math.random().toString(36).substring(2)
     });
     
     // Start processing if not already started
@@ -64,7 +72,11 @@ function processTasksWithDeadline(deadline) {
         const taskInfo = taskQueue.shift();
         
         try {
+            console.log(`Executing background task (${taskInfo.priority})`);
+            const startTime = performance.now();
             taskInfo.task();
+            const endTime = performance.now();
+            console.log(`Task completed in ${(endTime - startTime).toFixed(2)}ms`);
         } catch (error) {
             console.error('Error in background task:', error);
         }
@@ -88,7 +100,11 @@ function processTasksWithoutDeadline() {
         const taskInfo = taskQueue.shift();
         
         try {
+            console.log(`Executing background task (${taskInfo.priority}) using fallback`);
+            const startTime = performance.now();
             taskInfo.task();
+            const endTime = performance.now();
+            console.log(`Task completed in ${(endTime - startTime).toFixed(2)}ms`);
         } catch (error) {
             console.error('Error in background task:', error);
         }
@@ -102,8 +118,13 @@ function processTasksWithoutDeadline() {
     }
 }
 
-// Process data in chunks
+// Process data in chunks to avoid UI freezing
 function processDataInChunks(data, processFn, chunkSize = 100, onComplete) {
+    if (!Array.isArray(data) || typeof processFn !== 'function') {
+        console.error('Invalid arguments for processDataInChunks');
+        return;
+    }
+    
     let index = 0;
     
     function processNextChunk() {
@@ -119,7 +140,7 @@ function processDataInChunks(data, processFn, chunkSize = 100, onComplete) {
             
             if (index < data.length) {
                 // Schedule next chunk
-                scheduleBackgroundTask(processNextChunk);
+                scheduleBackgroundTask(processNextChunk, { priority: 'normal' });
             } else if (typeof onComplete === 'function') {
                 // All chunks processed
                 onComplete();
@@ -189,9 +210,12 @@ function generateMockPath(start, end, waypoints) {
     return path;
 }
 
-// Make functions available to other scripts
+// Make functions available globally
 window.backgroundTasks = {
     scheduleBackgroundTask,
     processDataInChunks,
     calculateRouteInBackground
 };
+
+// Make the main function available globally for other scripts
+window.scheduleBackgroundTask = scheduleBackgroundTask;
