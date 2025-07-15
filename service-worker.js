@@ -13,7 +13,6 @@ const INITIAL_CACHE_RESOURCES = [
   '/js/intersection-observer.js',
   '/js/background-tasks.js',
   '/js/network-info.js',
-  '/images/placeholder.jpg',
   '/manifest.json'
 ];
 

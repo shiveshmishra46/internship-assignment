@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Travel Companion</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="js/sidebar.js"></script>
+    <link rel="stylesheet" href="style2.css">
+    <link rel="stylesheet" href="css/map-style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Add Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
@@ -19,85 +20,82 @@
     <div class="sidebar-overlay"></div>
     
     <!-- Sidebar menu -->
-    <!-- Updated sidebar HTML -->
-      <!-- Sidebar menu - perfectly aligned with the image -->
-      <!-- Sidebar menu with fixed buttons and text -->
-      <aside class="sidebar">
-          <div class="sidebar-header">
-              <h2>Menu</h2>
-              <button class="close-sidebar"><i class="fas fa-times"></i></button>
-          </div>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Menu</h2>
+            <button class="close-sidebar"><i class="fas fa-times"></i></button>
+        </div>
 
-          <!-- User info section with proper spacing -->
-          <div class="sidebar-content">
-              <div class="user-section">
-                  <div class="user-avatar">
-                      <i class="fas fa-user"></i>
-                  </div>
-                  <div class="user-info">
-                      <h3>Travel User</h3>
-                      <p>Explorer</p>
-                  </div>
-              </div>
+        <!-- User info section with proper spacing -->
+        <div class="sidebar-content">
+            <div class="user-section">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <h3>Travel User</h3>
+                    <p>Explorer</p>
+                </div>
+            </div>
 
-              <!-- Navigation section with proper layout -->
-              <div class="nav-grid">
-                  <a href="#home" class="nav-item active">
-                      <div class="nav-icon">
-                          <i class="fas fa-home"></i>
-                      </div>
-                      <span>Home</span>
-                  </a>
-                  <a href="#map" class="nav-item">
-                      <div class="nav-icon">
-                          <i class="fas fa-map"></i>
-                      </div>
-                      <span>Map</span>
-                  </a>
-                  <a href="#recommendations" class="nav-item">
-                      <div class="nav-icon">
-                          <i class="fas fa-thumbs-up"></i>
-                      </div>
-                      <span>Recommendati-ons</span>
-                  </a>
-                  <a href="#saved" class="nav-item">
-                      <div class="nav-icon">
-                          <i class="fas fa-bookmark"></i>
-                      </div>
-                      <span>Saved Places</span>
-                  </a>
-              </div>
+            <!-- Navigation section with proper layout -->
+            <div class="nav-grid">
+                <a href="#home" class="nav-item active">
+                    <div class="nav-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <span>Home</span>
+                </a>
+                <a href="#map" class="nav-item">
+                    <div class="nav-icon">
+                        <i class="fas fa-map"></i>
+                    </div>
+                    <span>Map</span>
+                </a>
+                <a href="#recommendations" class="nav-item">
+                    <div class="nav-icon">
+                        <i class="fas fa-thumbs-up"></i>
+                    </div>
+                    <span>Recommendati-ons</span>
+                </a>
+                <a href="#saved" class="nav-item">
+                    <div class="nav-icon">
+                        <i class="fas fa-bookmark"></i>
+                    </div>
+                    <span>Saved Places</span>
+                </a>
+            </div>
 
-              <!-- Settings section -->
-              <div class="settings-section">
-                  <h4>Settings</h4>
-                  
-                  <!-- Theme toggle with perfect styling -->
-                  <div class="setting-item">
-                      <div class="setting-label">
-                          <i class="fas fa-moon"></i>
-                          <span>Theme</span>
-                      </div>
-                      <label class="toggle">
-                          <input type="checkbox" id="theme-switch">
-                          <span class="toggle-slider theme-slider"></span>
-                      </label>
-                  </div>
-                  
-                  <!-- Notification toggle with perfect styling -->
-                  <div class="setting-item">
-                      <div class="setting-label">
-                          <i class="fas fa-bell"></i>
-                          <span>Notifications</span>
-                      </div>
-                      <label class="toggle">
-                          <input type="checkbox" id="notification-toggle" checked>
-                          <span class="toggle-slider notification-slider"></span>
-                      </label>
-                  </div>
-              </div>
-          </div>
-      </aside>
+            <!-- Settings section -->
+            <div class="settings-section">
+                <h4>Settings</h4>
+                
+                <!-- Theme toggle with perfect styling -->
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <i class="fas fa-moon"></i>
+                        <span>Theme</span>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" id="theme-switch">
+                        <span class="toggle-slider theme-slider"></span>
+                    </label>
+                </div>
+                
+                <!-- Notification toggle with perfect styling -->
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <i class="fas fa-bell"></i>
+                        <span>Notifications</span>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" id="notification-toggle" checked>
+                        <span class="toggle-slider notification-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </aside>
 
     <header>
         <nav>
@@ -208,9 +206,9 @@
             </div>
             <div class="filter-options">
                 <button class="filter-btn active" data-filter="all">All</button>
-                <button class="filter-btn" data-filter="restaurants">Restaurants</button>
-                <button class="filter-btn" data-filter="attractions">Attractions</button>
-                <button class="filter-btn" data-filter="hotels">Hotels</button>
+                <button class="filter-btn" data-filter="restaurant">Restaurants</button>
+                <button class="filter-btn" data-filter="attraction">Attractions</button>
+                <button class="filter-btn" data-filter="hotel">Hotels</button>
             </div>
             <div id="recommendations-container" class="recommendations-grid">
                 <!-- Recommendations will be dynamically loaded with Intersection Observer -->
@@ -269,7 +267,7 @@
     <template id="recommendation-template">
         <div class="recommendation-card">
             <div class="recommendation-img">
-                <img src="images/placeholder.jpg" data-src="" alt="Place">
+                <img src="https://via.placeholder.com/400x300?text=Loading..." data-src="" data-category="default" alt="Place">
                 <div class="card-badge"></div>
             </div>
             <div class="recommendation-info">
@@ -287,7 +285,7 @@
     <template id="saved-place-template">
         <div class="saved-place-card">
             <div class="saved-place-img">
-                <img src="images/placeholder.jpg" alt="Saved Place">
+                <img src="https://via.placeholder.com/400x300?text=Loading..." data-category="default" alt="Saved Place">
                 <div class="card-badge"></div>
             </div>
             <div class="saved-place-info">
@@ -345,7 +343,7 @@
             </div>
             <div class="modal-body">
                 <div class="detail-img">
-                    <img id="detail-place-img" src="images/placeholder.jpg" alt="Place">
+                    <img id="detail-place-img" src="https://via.placeholder.com/600x400?text=Loading..." data-category="default" alt="Place">
                 </div>
                 <p id="detail-place-description">Description will appear here</p>
                 <div class="detail-meta">
@@ -371,8 +369,11 @@
     
     <!-- Chart.js for Canvas-based charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-            
+    
     <!-- Scripts -->
+    <script src="js/sidebar.js"></script>
+    <script src="js/image-handler.js"></script>
+    <script src="js/recommendation-data.js"></script>
     <script src="js/app.js"></script>
     <script src="js/geolocation.js"></script>
     <script src="js/leaflet-map.js"></script>

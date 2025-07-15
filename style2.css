@@ -1,0 +1,294 @@
+/* Fix for recommendation card buttons */
+.recommendation-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.recommendation-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding-bottom: 60px; /* Make space for the fixed button */
+    position: relative;
+}
+
+.recommendation-card .save-place {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    margin: 0;
+    /* Ensure visibility in dark mode */
+    background-color: var(--primary-color, #4299e1);
+    color: white;
+    border: none;
+}
+
+/* Dark mode specific fixes */
+.dark-mode .recommendation-card .save-place {
+    background-color: var(--primary-color, #63b3ed);
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .recommendation-card .save-place:hover {
+    background-color: var(--primary-hover-color, #90cdf4);
+}
+
+/* Fix for view-on-map button in saved places */
+.saved-place-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    position: relative;
+}
+
+.saved-place-card .place-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+/* UPDATED: View on map button with green color for better visibility in both modes */
+.saved-place-card .view-on-map,
+.btn.view-on-map,
+.view-on-map-btn {
+    background-color: #4caf50 !important;  /* Light green */
+    color: white !important;
+    border: none !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+.saved-place-card .view-on-map:hover,
+.btn.view-on-map:hover,
+.view-on-map-btn:hover {
+    background-color: #388e3c !important;  /* Darker green on hover */
+}
+
+.saved-place-card .remove-place {
+    background-color: var(--danger-color, #e53e3e);
+    color: white;
+    border: none;
+}
+
+/* Dark mode specific fixes for saved place buttons */
+.dark-mode .saved-place-card .view-on-map,
+.dark-mode .btn.view-on-map,
+.dark-mode .view-on-map-btn {
+    background-color: #4caf50 !important;  /* Keep same green in dark mode */
+    color: white !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+}
+
+.dark-mode .saved-place-card .view-on-map:hover,
+.dark-mode .btn.view-on-map:hover,
+.dark-mode .view-on-map-btn:hover {
+    background-color: #388e3c !important;  /* Darker green on hover */
+}
+
+.dark-mode .saved-place-card .remove-place {
+    background-color: var(--danger-color, #f56565);
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .saved-place-card .remove-place:hover {
+    background-color: var(--danger-hover-color, #fc8181);
+}
+
+/* Add CSS variables for consistent colors */
+:root {
+    --primary-color: #4299e1;
+    --primary-hover-color: #3182ce;
+    --secondary-color: #a0aec0;
+    --secondary-hover-color: #718096;
+    --danger-color: #e53e3e;
+    --danger-hover-color: #c53030;
+    --card-bg-light: #ffffff;
+    --card-bg-dark: #2d3748;
+    --text-light: #1a202c;
+    --text-dark: #f7fafc;
+    --green-color: #4caf50;
+    --green-hover-color: #388e3c;
+}
+
+/* Light mode defaults */
+body.light-mode {
+    --card-bg: var(--card-bg-light);
+    --text-color: var(--text-light);
+}
+
+/* Dark mode adjustments */
+body.dark-mode {
+    --card-bg: var(--card-bg-dark);
+    --text-color: var(--text-dark);
+}
+
+/* Card styles for both modes */
+.recommendation-card, .saved-place-card {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+}
+
+/* Ensure all buttons have hover effects */
+.btn {
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* Fix button hover states */
+.btn.primary:hover {
+    background-color: var(--primary-hover-color);
+}
+
+.btn.secondary:hover {
+    background-color: var(--secondary-hover-color);
+}
+
+/* Fix for map zoom buttons */
+.map-controls .btn.icon {
+    background-color: white !important;
+    color: #333 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    margin: 0 5px;
+}
+
+.dark-mode .map-controls .btn.icon {
+    background-color: #2d3748 !important;
+    color: #f7fafc !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+}
+
+.map-controls .btn.icon:hover {
+    background-color: #f0f0f0 !important;
+}
+
+.dark-mode .map-controls .btn.icon:hover {
+    background-color: #4a5568 !important;
+}
+
+/* Make sure recommendation and saved place cards are the same height in a row */
+.recommendations-grid, .saved-places-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.recommendation-wrapper, .saved-place-card {
+    height: 100%;
+    display: flex;
+}
+
+/* Sidebar fixes for theme and notification toggles */
+.setting-item {
+    cursor: pointer;
+    user-select: none;
+}
+
+.toggle {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+}
+
+.toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: var(--primary-color, #4299e1);
+}
+
+input:focus + .toggle-slider {
+    box-shadow: 0 0 1px var(--primary-color, #4299e1);
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(24px);
+}
+
+/* Map loading optimizations */
+#map-element {
+    min-height: 400px;
+    background-color: #f5f5f5;
+    position: relative;
+    z-index: 1;
+}
+
+.dark-mode #map-element {
+    background-color: #2d3748;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .recommendation-card .save-place {
+        bottom: 12px;
+        left: 12px;
+        right: 12px;
+        padding: 10px;
+    }
+    
+    .saved-place-card .place-actions {
+        flex-direction: column;
+    }
+    
+    .map-controls {
+        padding: 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .recommendation-info {
+        padding-bottom: 50px;
+    }
+    
+    .recommendation-card .save-place {
+        padding: 8px;
+        font-size: 14px;
+    }
+}
+
