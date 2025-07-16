@@ -1,0 +1,135 @@
+/* 
+ * Toast Component Styles
+ * Last updated: 2025-07-16
+ */
+
+#toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 350px;
+}
+
+.toast {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  border-radius: var(--border-radius);
+  padding: 0.75rem 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  transform: translateX(100%);
+  opacity: 0;
+  overflow: hidden;
+  transition: transform 0.3s, opacity 0.3s;
+  position: relative;
+}
+
+.toast.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.toast.closing {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.toast::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+}
+
+.toast.info::before {
+  background-color: var(--info-color);
+}
+
+.toast.success::before {
+  background-color: var(--success-color);
+}
+
+.toast.warning::before {
+  background-color: var(--warning-color);
+}
+
+.toast.error::before {
+  background-color: var(--error-color);
+}
+
+.toast-icon {
+  margin-right: 0.75rem;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.toast.info .toast-icon {
+  color: var(--info-color);
+}
+
+.toast.success .toast-icon {
+  color: var(--success-color);
+}
+
+.toast.warning .toast-icon {
+  color: var(--warning-color);
+}
+
+.toast.error .toast-icon {
+  color: var(--error-color);
+}
+
+.toast-message {
+  flex: 1;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  color: var(--text-color-light);
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin-left: 0.75rem;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.toast-close:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--text-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  #toast-container {
+    bottom: 10px;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+  
+  .toast {
+    width: 100%;
+  }
+  
+  .toast-message {
+    font-size: 0.85rem;
+  }
+}

@@ -1,0 +1,62 @@
+/* 
+ * Light Theme Styles
+ * Last updated: 2025-07-16
+ */
+
+body.light-mode {
+  --text-color: #333333;
+  --text-color-light: #666666;
+  --background-color: #ffffff;
+  --card-background: #f9f9f9;
+  --border-color: #e0e0e0;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Light theme specific overrides */
+body.light-mode .leaflet-container {
+  background-color: #f2f2f2;
+}
+
+body.light-mode .stats-card {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+body.light-mode .social-icon {
+  background-color: #f0f0f0;
+}
+
+body.light-mode .filter-btn {
+  background-color: #f0f0f0;
+}
+
+body.light-mode .theme-toggle-label {
+  background-color: #f1c40f;
+}
+
+body.light-mode .theme-toggle-label .fa-sun {
+  color: white;
+  opacity: 1;
+}
+
+body.light-mode .theme-toggle-label .fa-moon {
+  opacity: 0;
+}
+
+/* Code highlighting for light theme */
+body.light-mode .code {
+  background-color: #f8f8f8;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+body.light-mode .code .keyword {
+  color: #0000ff;
+}
+
+body.light-mode .code .string {
+  color: #008000;
+}
+
+body.light-mode .code .comment {
+  color: #808080;
+}
